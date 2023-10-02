@@ -1,0 +1,56 @@
+.container {
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    position: fixed;
+    flex-direction: column;
+    width: 50rem;
+    background-color: white;
+    z-index: 30;
+    border-radius: 1.5rem;
+  }
+  
+  .header {
+    width: 100%;
+    border-radius: 1.5rem 1.5rem 0 0;
+    padding: 1rem 0;
+    font-size: 1.6rem;
+    text-align: center;
+    background-color: #13213c;
+    color:aliceblue;
+  }
+  
+  .input-container {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 4rem 0;
+  }
+  
+  .name-input {
+    width: 60%;
+    height: 5rem;
+    font-size: 2rem;
+    border-radius: 1rem;
+    padding: 0 1.5rem;
+  }
+  
+  .btn-container {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+  }
+  
+  .btn {
+    font-size: 2rem;
+    width: fit-content;
+    text-decoration: none;
+    margin-bottom: 2rem;
+    margin-right: 3rem;
+    background-color: #F0C808;
+    padding: 0.7rem 1.5rem;
+    border-radius: 1.5rem;
+    border-style: none;
+  }
+  

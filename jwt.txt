@@ -1,0 +1,6 @@
+aud: "https://localhost:7189/"
+exp: 1690027882
+http://schemas.microsoft.com/ws/2008/06/identity/claims/role: "ordinaryUser"
+http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name: "test"
+http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier: "2a4f006c-bc92-497c-9106-200747d6a4f1"
+iss: "https://localhost:7189/"

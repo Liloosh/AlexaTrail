@@ -1,0 +1,30 @@
+.page-container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  align-items: center;
+  padding-top: 10rem;
+}
+
+.refsPages {
+    margin: 0 1rem;
+    margin-bottom: 5rem;
+    text-decoration: none;
+}
+
+.create-btn-container {
+    background-color: #F0C808;
+    font-size: 2rem;
+    border-radius: 1.5rem;
+    padding: 0.8rem 2.5rem;
+}
+
+.create-btn {
+    color: #13213c;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.refsPages-container {
+    display: flex;
+}
