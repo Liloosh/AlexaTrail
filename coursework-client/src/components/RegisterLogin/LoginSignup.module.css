@@ -1,0 +1,350 @@
+.container {
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  position: fixed;
+  width: 50rem;
+  transition: all 0.2s;
+  z-index: 30;
+}
+
+.date-container {
+  display: flex;
+  background-color: white;
+  max-width: 50rem;
+  justify-content: space-around;
+  border-radius: 1.5rem;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  padding: 1.5rem 1.5rem;
+  align-items: center;
+}
+
+.move-register-in {
+  opacity: 0;
+  animation-name: registerMoveIn;
+  animation-duration: 0.5s;
+  animation-delay: 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes registerMoveIn {
+  0% {
+    opacity: 0;
+    transform: translateX(50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.move-register-out {
+  animation-name: registerMoveOut;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes registerMoveOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(50%);
+    opacity: 0;
+  }
+}
+
+.component {
+  margin-bottom: 0.5rem;
+}
+
+.input {
+  font-size: 1rem;
+  border: 0.2rem solid #a4b0bc;
+  border-radius: 1rem;
+  padding: 1rem 2.5rem;
+}
+
+.input:active {
+  box-shadow: 2px 2px 15px #a4b0bc inset;
+}
+
+.invalid-msg {
+  display: block;
+  padding-left: 1rem;
+  font-size: 1.2rem;
+  color: red;
+  opacity: 1;
+  visibility: visible;
+  transition: 0.2s;
+}
+
+.valid-msg {
+  display: block;
+  font-size: 0px;
+  transition: 0.2s;
+}
+
+.last-component {
+  margin-bottom: 1.5rem;
+}
+
+.btn {
+  border: none;
+  height: 4rem;
+  border: 3px solid #678094;
+  border-radius: 45px;
+  transition: all 0.3s;
+  cursor: pointer;
+  background: white;
+  font-size: 1.6em;
+  font-weight: 550;
+  padding: 0.5rem 2rem;
+}
+
+.btn:hover {
+  background: #678094;
+  color: white;
+  font-size: 1.8em;
+}
+
+.overlay {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
+  width: 50%;
+  justify-content: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  background-color: #678094;
+  border-radius: 1.5rem 0 0 1.5rem;
+}
+
+.overlay-register-out {
+  animation-name: registerOverlayMove;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes registerOverlayMove {
+  0% {
+    transform: translateX(0);
+    border-radius: 1.5rem 0 0 1.5rem;
+  }
+  100% {
+    transform: translateX(100%);
+    border-radius: 0 1.5rem 1.5rem 0;
+  }
+}
+
+.overlay-login-in {
+  animation-name: loginOverlayMove;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes loginOverlayMove {
+  0% {
+    transform: translateX(100%);
+    border-radius: 0 1.5rem 1.5rem 0;
+  }
+  100% {
+    transform: translateX(0);
+    border-radius: 1.5rem 0 0 1.5rem;
+  }
+}
+
+.to-register {
+  color: white;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hide-register-text {
+  animation-name: textRegisterOverlayMoveOut;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textRegisterOverlayMoveOut {
+  0% {
+    transform: translateX(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    transform: translateX(-100%);
+    clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+  }
+}
+
+.open-register-text {
+  animation-name: textRegisterOverlayMoveIn;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textRegisterOverlayMoveIn {
+  0% {
+    transform: translateX(-100%);
+    clip-path: polygon(100% 0, 100% 0, 100% 100%, 100% 100%);
+  }
+  100% {
+    transform: translateX(0);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.overlay-component-header {
+  font-size: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.overlay-component-p {
+  text-align: center;
+  width: 70%;
+  font-size: 1.2rem;
+  margin-bottom: 1.5rem;
+}
+
+.overlay-login-btn,
+.overlay-register-btn {
+  color: #f0c808;
+  text-decoration: none;
+  font-size: 1.6rem;
+  font-weight: bold;
+  padding: 0.5rem 3rem;
+  border-radius: 3rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.5s;
+}
+
+.overlay-login-btn:hover,
+.overlay-register-btn:hover {
+  transform: scale(1.05);
+  box-shadow: 0 1rem 2rem rgb(0, 0, 0, 0.2);
+}
+
+.overlay-register-btn:hover::before {
+  content: "←ㅤ";
+  animation-name: scaleArrow;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+.overlay-login-btn:hover::after {
+  content: "ㅤ→";
+  animation-name: scaleArrow;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes scaleArrow {
+  0% {
+    font-size: 0;
+  }
+  100% {
+    font-size: 1.6rem;
+  }
+}
+
+.overlay-login-btn:active,
+.overlay-register-btn:active {
+  transform: translateY(-0.1rem);
+  box-shadow: 0 0.5rem 1rem rgb(0, 0, 0, 0.2);
+}
+
+.to-login {
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 100%;
+  height: 100%;
+  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+}
+
+.open-login-text {
+  animation-name: textLoginOverlayMoveIn;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textLoginOverlayMoveIn {
+  0% {
+    transform: translateX(0);
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  100% {
+    transform: translateX(-100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.hide-login-text {
+  animation-name: textLoginOverlayMoveOut;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes textLoginOverlayMoveOut {
+  0% {
+    transform: translateX(-100%);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+  100% {
+    transform: translateX(0);
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+}
+
+.move-login-out {
+  animation-name: loginMoveOut;
+  animation-duration: 0.5s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes loginMoveOut {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    z-index: -10;
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+}
+
+.move-login-in {
+  opacity: 0;
+  animation-name: loginMoveIn;
+  animation-duration: 0.5s;
+  animation-delay: 0.25s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes loginMoveIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-50%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

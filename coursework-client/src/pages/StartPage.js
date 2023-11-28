@@ -1,5 +1,5 @@
 function StartPage() {
-    return <h1>Start Page</h1>
+    return <h3>Start Page</h3>
 }
 
 export default StartPage;

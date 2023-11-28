@@ -7,7 +7,7 @@ import {
   getUserName,
 } from "../util/auth";
 
-import Header from "../components/Header";
+import Header from "../components/RootLayout/Header";
 import AuthContext from "../context/AuthContext";
 
 function RootLayout() {
@@ -17,6 +17,7 @@ function RootLayout() {
 
   useEffect(() => {
     if (loaderData === null) {
+      logout();
       return;
     }
 

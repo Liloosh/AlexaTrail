@@ -14,6 +14,7 @@ namespace backend.Data
 
         public DbSet<RefsGroup> RefsGroup { get; set; }
         public DbSet<Ref> Ref { get; set; }
+        public DbSet<EmailVerification> EmailVerification { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

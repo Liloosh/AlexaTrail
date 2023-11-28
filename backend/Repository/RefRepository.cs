@@ -3,10 +3,13 @@ using backend.Model.Domain;
 using backend.Model.DTO.RefDTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Ocsp;
+using Org.BouncyCastle.Pqc.Crypto.Utilities;
+using System;
 
 namespace backend.Repository
 {
-    public class RefRepository: IRefRepository
+    public class RefRepository : IRefRepository
     {
         private readonly AppDbContext dbContext;
 
@@ -25,14 +28,14 @@ namespace backend.Repository
         {
             var refsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(x => x.Name == refsGroupName);
 
-            if(refsGroup == null)
+            if (refsGroup == null)
             {
                 return null;
             }
 
             var refs = await dbContext.Ref.Where(e => e.RefsGroupId == refsGroup.Id).OrderBy(x => x.Order).ToListAsync();
 
-            if(refs.Count == 0)
+            if (refs.Count == 0)
             {
                 return null;
             }
@@ -40,16 +43,55 @@ namespace backend.Repository
             return refs;
         }
 
-        public async Task<Ref> deleteRef(Guid refId)
+        public async Task<List<Ref>> deleteRef(Guid refId, Guid refGroupId)
         {
             var Ref = await dbContext.Ref.FirstOrDefaultAsync(e => e.Id == refId);
+            int order = Ref.Order;
             if (Ref != null)
             {
-                dbContext.Ref.Remove(Ref);
+                if (Ref.DoubleRef == true)
+                {
+                    dbContext.Ref.Remove(Ref);
+                    await dbContext.SaveChangesAsync();
+
+                    var secondRef = await dbContext.Ref.FirstOrDefaultAsync(e => e.RefsGroupId == refGroupId && e.Order == order);
+
+                    dbContext.Ref.Remove(secondRef);
+                    await dbContext.SaveChangesAsync();
+
+                }
+                else
+                {
+                    dbContext.Ref.Remove(Ref);
+                    await dbContext.SaveChangesAsync();
+                }
+
+                var refLIst = await dbContext.Ref.Where(e => e.RefsGroupId == refGroupId).ToListAsync();
+
+                if (refLIst.Count == 0)
+                {
+                    return null;
+                }
+
+                foreach (var item in refLIst)
+                {
+                    if (item.Order < order)
+                    {
+                        continue;
+                    }
+
+                    item.Order = item.Order - 1;
+                }
+
+                dbContext.Ref.UpdateRange(refLIst);
                 await dbContext.SaveChangesAsync();
+
+                var newRefLIst = await dbContext.Ref.Where(e => e.RefsGroupId == refGroupId).ToListAsync();
+
+                return newRefLIst;
             }
 
-            return Ref;
+            return null;
         }
 
         public async Task<RefDTO> createNewRef(Ref Ref)
@@ -67,51 +109,156 @@ namespace backend.Repository
             return refDTO;
         }
 
-        public async Task<Ref> updateRef(Guid refId, RefDTO Ref)
+        public async Task<List<Ref>> updateRef(Guid refsGroupId, List<UpdateDTO> refs)
         {
-            var existedRef = await dbContext.Ref.FirstOrDefaultAsync(x => x.Id == Ref.Id);
+            var refsList = await getAllRefs(refsGroupId);
 
-            var start_order = existedRef.Order;
-            var end_order = Ref.Order;
-            if (existedRef.Order != Ref.Order)
+
+            int previousOrder = 0;
+            int startOrder = 0;
+            int endIndex = 0;
+
+            for (int i = 0; i < refsList.Count; i++)
             {
-                List<Ref> refs = await dbContext.Ref.Where(x => x.RefsGroupId == existedRef.RefsGroupId).OrderBy(x => x.Order).ToListAsync();
-
-                if (existedRef.Order < Ref.Order)
+                if (refs[0].Id == refsList[i].Id)
                 {
-                    for (int i = start_order; i < end_order; i++)
+                    if (refsList[i].Order < refs[0].Order)
                     {
-                        refs[i].Order = refs[i].Order - 1;
-                        dbContext.Ref.Update(refs[i]);
-                        dbContext.SaveChanges();
+                        startOrder = refsList[i].Order + 1;
+                        previousOrder = refsList[i].Order;
                     }
-                }
-                else if (existedRef.Order > Ref.Order)
-                {
-                    for (int i = end_order; i < start_order; i++)
+                    else if (refsList[i].Order >= refs[0].Order)
                     {
-                        refs[i - 1].Order = refs[i - 1].Order + 1;
-                        dbContext.Ref.Update(refs[i -1]);
-                        dbContext.SaveChanges();
+                        startOrder = refsList[i].Order;
+                        endIndex = i;
+                        previousOrder = refsList[i].Order;
                     }
+                    break;
                 }
             }
 
-            if (existedRef != null)
+            int index = 0;
+
+            if (previousOrder < refs[0].Order)
             {
-                existedRef.Text = Ref.Text;
-                existedRef.URL = Ref.URL;
-                existedRef.Type = Ref.Type;
-                existedRef.Order = Ref.Order;
 
-                dbContext.Ref.Update(existedRef);
-                dbContext.SaveChanges();
+                for (int i = 0; i < refsList.Count; i++)
+                {
+                    if (startOrder == refsList[i].Order)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
 
-                return existedRef;
+                foreach (var refDTO in refsList)
+                {
+                    if (refDTO.Order < startOrder || refDTO.Order > refs[0].Order)
+                    {
+                        continue;
+                    }
+                    refDTO.Order = refDTO.Order - 1;
+                }
+            }
+            else if (previousOrder > refs[0].Order)
+            {
+                for (int i = 0; i < refsList.Count; i++)
+                {
+                    if (refs[0].Order == refsList[i].Order)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                foreach (var refDTO in refsList)
+                {
+                    if (refDTO.Order > startOrder - 1 || refDTO.Order < refs[0].Order)
+                    {
+                        continue;
+                    }
+                    refDTO.Order = refDTO.Order + 1;
+                }
+            }
+
+
+
+            switch (refs.Count)
+            {
+                case 1:
+                    if (previousOrder < refs[0].Order)
+                    {
+                        refsList[index - 1].Order = refs[0].Order;
+                        refsList[index - 1].URL = refs[0].URL;
+                        refsList[index - 1].Text = refs[0].Text;
+                        refsList[index - 1].Type = refs[0].Type;
+                    }
+                    else if (previousOrder >= refs[0].Order)
+                    {
+                        refsList[endIndex].Order = refs[0].Order;
+                        refsList[endIndex].URL = refs[0].URL;
+                        refsList[endIndex].Text = refs[0].Text;
+                        refsList[endIndex].Type = refs[0].Type;
+                    }
+                    break;
+                case 2:
+                    if (previousOrder < refs[0].Order)
+                    {
+                        refsList[index - 2].Order = refs[0].Order;
+                        refsList[index - 2].URL = refs[0].URL;
+                        refsList[index - 2].Text = refs[0].Text;
+                        refsList[index - 2].Type = refs[0].Type;
+
+                        refsList[index - 1].Order = refs[1].Order;
+                        refsList[index - 1].URL = refs[1].URL;
+                        refsList[index - 1].Text = refs[1].Text;
+                        refsList[index - 1].Type = refs[1].Type;
+                    }
+                    else if (previousOrder >= refs[0].Order)
+                    {
+                        refsList[endIndex].Order = refs[0].Order;
+                        refsList[endIndex].URL = refs[0].URL;
+                        refsList[endIndex].Text = refs[0].Text;
+                        refsList[endIndex].Type = refs[0].Type;
+
+                        refsList[endIndex + 1].Order = refs[1].Order;
+                        refsList[endIndex + 1].URL = refs[1].URL;
+                        refsList[endIndex + 1].Text = refs[1].Text;
+                        refsList[endIndex + 1].Type = refs[1].Type;
+                    }
+                    break;
+            }
+
+            dbContext.UpdateRange(refsList);
+            await dbContext.SaveChangesAsync();
+
+            var refss = await dbContext.Ref.Where(r => r.RefsGroupId == refsGroupId).OrderBy(r => r.Order).ToListAsync();
+
+            return refss;
+        }
+        
+        public async Task<List<Ref>> UpdateDragAndDrop(Guid refGroupId, List<RefDTO> refDTOs)
+        {
+            var refs = await dbContext.Ref.Where(r => r.RefsGroupId == refGroupId).OrderBy(r => r.Order).ToListAsync();
+
+            
+            if(refs.Count != 0)
+            {
+                for(int i = 0; i < refs.Count; i++)
+                {
+                    refs[i].Order = refDTOs[i].Order;
+                }
+
+                foreach(Ref Refs in refs)
+                {
+                    dbContext.Update(Refs);
+                }
+
+                await dbContext.SaveChangesAsync();
+                return refs;
             }
 
             return null;
-
         }
     }
 }

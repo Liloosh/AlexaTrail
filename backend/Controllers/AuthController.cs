@@ -74,5 +74,18 @@ namespace backend.Controllers
 
             return BadRequest("Something was wrong!");
         }
+
+        [HttpPost]
+        [Route("verify")]
+        public async Task<IActionResult> VerifyUser([FromBody]VerificationDTO request)
+        {
+            Console.WriteLine("1");
+            if(await userRepository.VerifyUser(request.Email, request.VerificationToken))
+            {
+                return Ok(new {message = "success"});
+            }
+
+            return BadRequest(new {message = "failed"});
+        }
     }
 }

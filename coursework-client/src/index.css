@@ -1,5 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 /*
  colors: 
+  gold
   #F0C808
   #13213c
   #678094
@@ -27,5 +32,5 @@ code {
 }
 
 html {
-  font-size: 11px;
+  font-size: 14px;
 }

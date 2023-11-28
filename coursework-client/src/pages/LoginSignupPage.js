@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom";
-import LoginSignup from "../components/LoginSignup";
+import LoginSignup from "../components/RegisterLogin/LoginSignup";
 import "../App.css";
 import { Link, json, redirect } from "react-router-dom";
 import { createSession } from "../util/auth";
@@ -55,8 +55,11 @@ export async function action({ request }) {
     return resData;
   }
 
-  const resData = await response.json();
-  createSession(resData.token);
+  if (mode == "login") {
+    const resData = await response.json();
+    createSession(resData.token);
+    return redirect("/" + resData.id);
+  }
 
-  return redirect("/" + resData.id);
+  return redirect("/checkEmailPage");
 }

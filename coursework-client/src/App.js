@@ -22,7 +22,14 @@ import CreationPage, {
 import UpdateRefsGroup, {
   action as updatePageAction,
 } from "./pages/UpdateRefsGroup";
-import PageForUsers, {loader as PageForUsersLoader} from "./pages/PageForUsers";
+import PageForUsers, {
+  loader as PageForUsersLoader,
+} from "./pages/PageForUsers";
+import EmailVerificationPage, {
+  action as EmailVerificationAction,
+} from "./pages/EmailVerificationPage";
+import CheckYourEmailPage from "./pages/CheckYourEmailPage";
+import { StyledEngineProvider } from "@mui/material";
 
 function App() {
   const router = createBrowserRouter([
@@ -73,13 +80,31 @@ function App() {
         {
           path: ":pageGroupName",
           element: <PageForUsers />,
-          loader: PageForUsersLoader
+          loader: PageForUsersLoader,
         },
-      ]
-    }
+      ],
+    },
+    {
+      path: "/verificationToken",
+      children: [
+        {
+          path: ":verificationToken",
+          element: <EmailVerificationPage />,
+          action: EmailVerificationAction,
+        },
+      ],
+    },
+    {
+      path: "/checkEmailPage",
+      element: <CheckYourEmailPage />,
+    },
   ]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <StyledEngineProvider injectFirst>
+      <RouterProvider router={router} />
+    </StyledEngineProvider>
+  );
 }
 
 export default App;

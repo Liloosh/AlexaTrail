@@ -1,6 +1,7 @@
 import { useSubmit, useActionData } from "react-router-dom";
 import classes from "./CreationForm.module.css";
 import { useEffect, useState } from "react";
+import { TextField } from "@mui/material";
 
 function CreationForm() {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -30,13 +31,16 @@ function CreationForm() {
     <div className={classes["container"]}>
       <h2 className={classes["header"]}>Create your ref</h2>
       <div className={classes["input-container"]}>
-        <input
+        <TextField
           onBlur={onSetRefsName}
           type="text"
-          placeholder="Personal ref"
+          label="Ref name"
+          variant="outlined"
           className={classes["name-input"]}
-        ></input>
-                {errorMessage && <h3 className={classes["invalid-msg"]}>{errorMessage}</h3>}
+        />
+        {errorMessage && (
+          <h3 className={classes["invalid-msg"]}>{errorMessage}</h3>
+        )}
       </div>
       <div className={classes["btn-container"]}>
         <button onClick={onSubmitHandler} className={classes["btn"]}>

@@ -8,6 +8,7 @@ namespace backend.Repository
         Task<bool> UserNameIsUnique(string userName);
         Task<LoginResponseDTO> Login(LoginRequestDTO model);
         Task<RegisterResponseDTO> Register(RegisterRequestDTO model);
+        Task<bool> VerifyUser(string email, string verificationToken);
 
     }
 }

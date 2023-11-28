@@ -1,5 +1,5 @@
 import { Link, redirect, useLoaderData } from "react-router-dom";
-import CreatedRefsPage from "../components/CreatedRefsPage";
+import CreatedRefsPage from "../components/HomePageComponents/CreatedRefsPage";
 import classes from "./HomePage.module.css";
 import { getUserId } from "../util/auth";
 
