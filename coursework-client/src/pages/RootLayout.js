@@ -1,11 +1,6 @@
 import { useContext, useEffect } from "react";
 import { Outlet, useLoaderData, useNavigate } from "react-router-dom";
-import {
-  getToken,
-  tokenDuration,
-  logout,
-  getUserName,
-} from "../util/auth";
+import { getToken, tokenDuration, logout, getUserName } from "../util/auth";
 
 import Header from "../components/RootLayout/Header";
 import AuthContext from "../context/AuthContext";
@@ -45,12 +40,11 @@ function RootLayout() {
   }, [loaderData]);
 
   return (
-    <>
+    <div>
       <Header />
-      <main>
-        <Outlet />
-      </main>
-    </>
+
+      <Outlet />
+    </div>
   );
 }
 

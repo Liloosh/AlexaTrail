@@ -60,3 +60,7 @@ C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\MailKit.dll
 C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\MimeKit.dll
 C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\System.Security.Cryptography.Pkcs.dll
 C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\runtimes\win\lib\net7.0\System.Security.Cryptography.Pkcs.dll
+C:\Users\Bohdan\Desktop\coursework\backend\obj\Debug\net7.0\backend.sourcelink.json
+C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\Scrutor.dll
+C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.dll
+C:\Users\Bohdan\Desktop\coursework\backend\bin\Debug\net7.0\Swashbuckle.AspNetCore.Filters.Abstractions.dll

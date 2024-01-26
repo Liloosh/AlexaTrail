@@ -45,7 +45,7 @@ const AddFormForDemoPage = (props) => {
     setType(event.target.value);
   };
   return (
-    <div className="h-full w-full flex flex-col gap-4 border-8 border-solid border-main-color rounded-xl rounded-t-none p-2">
+    <div className="h-full w-full flex flex-col gap-4 border-8 border-solid border-main-color rounded-xl rounded-t-none p-2 bg-white">
       <h1 className=" text-lg font-bold text-center p-1">New ref</h1>
       <TextField onChange={onSetTextHandler} label="Title" />
       <TextField onChange={onSetUrlHandler} label="URL" />

@@ -94,19 +94,99 @@ namespace backend.Repository
             return null;
         }
 
-        public async Task<RefDTO> createNewRef(Ref Ref)
+        public async Task<bool> createNewRef(Guid refsGroupId, List<CreateRefDTO> refs,  List<Ref> refsList)
         {
-            await dbContext.Ref.AddAsync(Ref);
-            await dbContext.SaveChangesAsync();
-
-            var refDTO = new RefDTO()
+            switch (refs.Count)
             {
-                Id = Ref.Id,
-                Text = Ref.Text,
-                Type = Ref.Type,
-                Order = Ref.Order,
-            };
-            return refDTO;
+                case 1:
+                    if (refsList.Count == 0)
+                    {
+                        refs[0].Order = 1;
+                    }
+                    else if (refsList[refsList.Count - 1].Order < refs[0].Order)
+                    {
+                        refs[0].Order = refsList[refsList.Count - 1].Order + 1;
+                    }
+                    break;
+                case 2:
+                    if (refsList.Count == 0)
+                    {
+                        refs[0].Order = 1;
+                        refs[1].Order = 1;
+                    }
+                    else if (refsList[refsList.Count - 1].Order < refs[0].Order)
+                    {
+                        refs[0].Order = refsList[refsList.Count - 1].Order + 1;
+                        refs[1].Order = refsList[refsList.Count - 1].Order + 1;
+                    }
+                    break;
+            }
+
+            if (refsList.Count != 0 && refsList[refsList.Count - 1].Order >= refs[0].Order)
+            {
+                int index = 0;
+
+                for (int i = 0; i < refsList.Count; i++)
+                {
+                    if (refsList[i].Order == refs[0].Order)
+                    {
+                        index = i; break;
+                    }
+                }
+
+                for (int i = index; i < refsList.Count; i++)
+                {
+                    refsList[i].Order = refsList[i].Order + 1;
+                }
+
+                dbContext.Ref.UpdateRange(refsList);
+                await dbContext.SaveChangesAsync();
+            }
+
+            switch (refs.Count)
+            {
+                case 1:
+                    var Ref1 = new Ref()
+                    {
+                        URL = refs[0].URL,
+                        Text = refs[0].Text,
+                        Type = refs[0].Type,
+                        Order = refs[0].Order,
+                        RefsGroupId = refsGroupId
+                    };
+                    await dbContext.AddAsync(Ref1);
+                    await dbContext.SaveChangesAsync();
+                    break;
+                case 2:
+                    var Ref11 = new Ref()
+                    {
+                        URL = refs[0].URL,
+                        Text = refs[0].Text,
+                        Type = refs[0].Type,
+                        Order = refs[0].Order,
+                        DoubleRef = true,
+                        OrderInRef = 1,
+                        RefsGroupId = refsGroupId
+                    };
+
+                    await dbContext.AddAsync(Ref11);
+                    await dbContext.SaveChangesAsync();
+                    var Ref2 = new Ref()
+                    {
+                        URL = refs[1].URL,
+                        Text = refs[1].Text,
+                        Type = refs[1].Type,
+                        Order = refs[1].Order,
+                        DoubleRef = true,
+                        OrderInRef = 2,
+                        RefsGroupId = refsGroupId
+                    };
+
+                    await dbContext.AddAsync(Ref2);
+                    await dbContext.SaveChangesAsync();
+                    break;
+            }
+            return true;
         }
 
         public async Task<List<Ref>> updateRef(Guid refsGroupId, List<UpdateDTO> refs)

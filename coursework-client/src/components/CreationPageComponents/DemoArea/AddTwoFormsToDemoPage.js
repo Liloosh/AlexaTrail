@@ -1,3 +1,5 @@
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import {
   Button,
   FormControl,
@@ -75,7 +77,7 @@ const AddTwoFormsForDemoPage = (props) => {
   };
 
   return (
-    <div className="flex flex-col gap-4 border-8 border-solid border-main-color rounded-xl rounded-t-none p-2">
+    <div className="flex flex-col gap-4 border-8 border-solid border-main-color rounded-xl rounded-t-none p-2 bg-white">
       <div
         className={createdRef == 1 ? "h-full w-full flex  gap-4 " : "hidden"}
       >
@@ -84,7 +86,7 @@ const AddTwoFormsForDemoPage = (props) => {
           <TextField onChange={onSetText1Handler} label="Title" />
           <TextField onChange={onSetUrl1Handler} label="URL" />
           <div className=" flex justify-between">
-            <FormControl className=" w-[10rem]">
+            <FormControl className=" w-full">
               <InputLabel>Type</InputLabel>
               <Select label="Type" value={type1} onChange={onSetType1Handler}>
                 {ctx.icons.map((item) => {
@@ -94,18 +96,18 @@ const AddTwoFormsForDemoPage = (props) => {
             </FormControl>
           </div>
         </div>
-        <div className=" w-[20%] bg-slate-600 flex justify-center items-center">
+        <div className=" w-[10%] rounded-xl bg-slate-600 flex justify-center items-center">
           <button onClick={onGoToSecond} className=" text-white text-lg">
-            -{">"}
+            <ArrowForwardIcon fontSize='small'/>
           </button>
         </div>
       </div>
       <div
         className={createdRef == 2 ? "h-full w-full flex  gap-4 " : "hidden"}
       >
-        <div className=" w-[20%] bg-slate-600 flex justify-center items-center">
+        <div className=" w-[10%] bg-slate-600 flex rounded-xl justify-center items-center">
           <button onClick={onGoToFirst} className=" text-white text-lg">
-            {"<"}-
+          <ArrowBackIcon fontSize='small'/>
           </button>
         </div>
         <div className=" w-[90%] flex flex-col gap-2">
@@ -113,7 +115,7 @@ const AddTwoFormsForDemoPage = (props) => {
           <TextField onChange={onSetText2Handler} label="Title" />
           <TextField onChange={onSetUrl2Handler} label="URL" />
           <div className=" flex justify-between">
-            <FormControl className=" w-[10rem]">
+            <FormControl className=" w-full">
               <InputLabel>Type</InputLabel>
               <Select label="Type" value={type2} onChange={onSetType2Handler}>
                 {ctx.icons.map((item) => {

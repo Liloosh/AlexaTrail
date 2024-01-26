@@ -288,6 +288,12 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<byte[]>("Photo")
+                        .HasColumnType("longblob");
+
+                    b.Property<string>("PhotoHash")
+                        .HasColumnType("longtext");
+
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("varchar(255)");

@@ -6,7 +6,7 @@ import { getUserId } from "../util/auth";
 function HomePage() {
   const loaderData = useLoaderData();
   return (
-    <div className={classes["page-container"]}>
+    <div className={` h-screen ${classes["page-container"]}`}>
       <div className={classes["refsPages-container"]}>
         {loaderData.map((item, index) => {
           return (
@@ -27,23 +27,31 @@ function HomePage() {
 
 export default HomePage;
 
-export async function loader({params}) {
+export async function loader({ params }) {
   const userId = params.userId;
-  const response = await fetch("https://localhost:7189/api/RefsGroup/" + userId, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
+  const response = await fetch(
+    "https://localhost:7189/api/RefsGroup/" + userId,
+    {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    }
+  );
 
   const resData = response.json();
 
   return resData;
 }
 
-export async function action({request, params}) {
+export async function action({ request, params }) {
   const formData = await request.formData();
   const id = formData.get("id");
-  const response = await fetch("https://localhost:7189/api/RefsGroup/" + id, {method: "DELETE"})
-  return redirect(`/${params.userId}`)
+  const response = await fetch("https://localhost:7189/api/RefsGroup/" + id, {
+    headers: {
+      Authorization: "Bearer " + localStorage.getItem("token"),
+    },
+    method: "DELETE",
+  });
+  return redirect(`/${params.userId}`);
 }

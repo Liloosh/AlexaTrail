@@ -20,21 +20,37 @@ function CreationForm() {
   }, [actionData]);
 
   const onSetRefsName = (event) => {
-    setRefsName(event.target.value);
+    if (event.target.value.length === 25) {
+      return;
+    } else {
+      if (event.target.value == "") {
+        setErrorMessage("RefsGroup name can`t be empty");
+        
+      } else if (errorMessage == "RefsGroup name can`t be empty") {
+        setErrorMessage(null);
+
+      }
+      setRefsName(event.target.value);
+    }
   };
 
   const onSubmitHandler = () => {
+    if (refsName == null || refsName == "") {
+      setErrorMessage("RefsGroup name can`t be empty");
+      return;
+    }
     return submit({ refsName }, { method: "POST" });
   };
 
   return (
     <div className={classes["container"]}>
-      <h2 className={classes["header"]}>Create your ref</h2>
+      <h2 className={classes["header"]}>Create your RefsGroup</h2>
       <div className={classes["input-container"]}>
         <TextField
-          onBlur={onSetRefsName}
+          onChange={onSetRefsName}
+          value={refsName}
           type="text"
-          label="Ref name"
+          label="RefsGroup name"
           variant="outlined"
           className={classes["name-input"]}
         />

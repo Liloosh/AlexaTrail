@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSubmit } from "react-router-dom";
 import TextField from "@mui/material/TextField";
 import { Button } from "@mui/material";
@@ -9,6 +9,13 @@ const EmailVerificationPage = () => {
 
   const submit = useSubmit();
   const [email, setEmail] = useState();
+  const [message, setMessage] = useState(null);
+
+  useEffect(() => {
+    if (actionData) {
+      setMessage(actionData.message);
+    }
+  }, [actionData]);
 
   const onInputBlurHandler = (event) => {
     setEmail(event.target.value);
@@ -20,33 +27,31 @@ const EmailVerificationPage = () => {
 
   return (
     <div className=" bg-gray-500 h-screen w-full pt-40">
-      {(actionData.message == null || actionData.message == "failed") && (
-        <div className=" w-[25rem] h-fit mx-auto flex flex-col items-center rounded-xl py-5 gap-4 bg-white">
-          <h2 className=" text-xl font-bold">
-            Enter your email for confirming
-          </h2>
-          <TextField
-            onBlur={onInputBlurHandler}
-            id="outlined-basic"
-            label="Email"
-            type="email"
-            variant="outlined"
-          />
-          <Button
-            onClick={onFormSubmit}
-            size="large"
-            variant="contained"
-            color="success"
-          >
-            Submit
-          </Button>
-        </div>
-      )}
-      {actionData.message == "success" && (
+      (
+      <div className=" w-[25rem] h-fit mx-auto flex flex-col items-center rounded-xl py-5 gap-4 bg-white">
+        <h2 className=" text-xl font-bold">Enter your email for confirming</h2>
+        <TextField
+          onBlur={onInputBlurHandler}
+          id="outlined-basic"
+          label="Email"
+          type="email"
+          variant="outlined"
+        />
+        <Button
+          onClick={onFormSubmit}
+          size="large"
+          variant="outlined"
+          color="success"
+        >
+          Submit
+        </Button>
+      </div>
+      )
+      {message === "success" && (
         <div className=" w-[25rem] h-fit mx-auto flex flex-col items-center rounded-xl py-5 gap-4 bg-white">
           <h2>Your email was confirmed</h2>
           <h3>Go to site and log in</h3>
-          <Button variant="contained" color="info">
+          <Button className=" text-md" variant="outlined" color="info">
             Go to home page
           </Button>
         </div>

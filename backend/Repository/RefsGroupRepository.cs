@@ -1,5 +1,6 @@
 ﻿using backend.Data;
 using backend.Model.Domain;
+using backend.Model.DTO;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Repository
@@ -12,6 +13,14 @@ namespace backend.Repository
         {
             this.dbContext = dbContext;
         }
+
+        public async Task<string> getRefsGroupName(Guid refsGroupId)
+        {
+            var refGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(r => r.Id == refsGroupId);
+
+            return refGroup.Name;
+        }
+
         public async Task<List<RefsGroup>> getRefsGroup(string userId)
         {
             var refs = await dbContext.RefsGroup.Where(e => e.UserId == userId).ToListAsync();
@@ -45,15 +54,54 @@ namespace backend.Repository
 
         public async Task<RefsGroup> updaterefsGroup(Guid refsId, string title)
         {
-            var  existerRefsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(e => e.Id == refsId);
-
-            if (existerRefsGroup != null)
+            if (!(await dbContext.RefsGroup.AnyAsync(x => x.Name == title)))
             {
-                existerRefsGroup.Name = title;
-                dbContext.Update(existerRefsGroup);
-                await dbContext.SaveChangesAsync();
+                var existerRefsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(e => e.Id == refsId);
+
+                if (existerRefsGroup != null)
+                {
+                    existerRefsGroup.Name = title;
+                    dbContext.Update(existerRefsGroup);
+                    await dbContext.SaveChangesAsync();
+                }
+                return existerRefsGroup;
             }
-            return existerRefsGroup;
+            return null;
+         }
+
+        public async Task<bool> uploadPhoto(Guid refsId, ImageForm image)
+        {
+            await using var streamMemory = new MemoryStream();
+            await image.myImage.CopyToAsync(streamMemory);
+            var photoArray = streamMemory.ToArray();
+
+            var refsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(e => e.Id == refsId);
+            if (refsGroup != null)
+            {
+                refsGroup.Photo = photoArray;
+                dbContext.Update(refsGroup);
+                await dbContext.SaveChangesAsync();
+                return true;
+            }
+            return false;
+        }
+
+        public async Task<byte[]> getImage(Guid refsId)
+        {
+            var refsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(e => e.Id == refsId);
+
+            return refsGroup.Photo;
+        }
+
+        public async Task<byte[]> getImageByName(string name)
+        {
+            var refsGroup = await dbContext.RefsGroup.FirstOrDefaultAsync(e => e.Name == name);
+
+            if (refsGroup == null) {
+                return null;
+            }
+
+            return refsGroup.Photo;
         }
     }
 }

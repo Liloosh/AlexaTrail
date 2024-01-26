@@ -1,5 +1,6 @@
 ﻿using backend.Data;
 using backend.Model.Domain;
+using backend.Model.DTO;
 using backend.Model.DTO.RefsGroupDTO;
 using backend.Repository;
 using Microsoft.AspNetCore.Authorization;
@@ -22,6 +23,17 @@ namespace backend.Controllers
         }
 
         [HttpGet]
+        [Authorize]
+        [Route("refsGroupName/{refsGroupId:Guid}")]
+        public async Task<IActionResult> getRefsGroupName([FromRoute] Guid refsGroupId)
+        {
+            var refGroupName = await refsGroupRepository.getRefsGroupName(refsGroupId);
+
+            return Ok(new { refGroupName = refGroupName });
+        }
+
+        [HttpGet]
+        [Authorize]
         [Route("{userId:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -51,6 +63,7 @@ namespace backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> createRefs([FromBody] CreateRefsGroupDTO refsDTO)
@@ -71,6 +84,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete]
+        [Authorize]
         [Route("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> deleteRef([FromRoute] Guid id)
@@ -86,6 +100,7 @@ namespace backend.Controllers
         }
 
         [HttpPut]
+        [Authorize]
         [Route("{id:Guid}")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -98,7 +113,58 @@ namespace backend.Controllers
                 return Ok();
             }
 
-            return NoContent();
+            return BadRequest();
+        }
+
+        [HttpPost]
+        [Authorize]
+        [Route("setImage/{refsGroupId:Guid}")]
+        public async Task<IActionResult> uploadImage(Guid refsGroupId, [FromForm]ImageForm mmyImage)
+        {
+            var result = await refsGroupRepository.uploadPhoto(refsGroupId, mmyImage);
+
+            return Ok(result);
+
+        }
+
+        [HttpGet]
+        [Route("getImage/{refsGroupId:Guid}")]
+        public async Task<IActionResult> getImage(Guid refsGroupId)
+        {
+            var photo = await refsGroupRepository.getImage(refsGroupId);
+
+            return Ok(new { image = photo});
+        }
+        [HttpGet]
+        [Route("getImage2/{refsGroupId:Guid}")]
+        public async Task<IActionResult> getImage2(Guid refsGroupId)
+        {
+            var photo = await refsGroupRepository.getImage(refsGroupId);
+
+            return File(photo, "image/png");
+        }
+
+        [HttpGet]
+        [Route("getImageByName")]
+        public async Task<IActionResult> getImage([FromQuery]string name)
+        {
+            var photo = await refsGroupRepository.getImageByName(name);
+
+            if (photo == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(new { image = photo });
+        }
+
+        [HttpGet]
+        [Route("getImageByName2")]
+        public async Task<IActionResult> getImage2([FromQuery] string name)
+        {
+            var photo = await refsGroupRepository.getImageByName(name);
+
+            return File(photo, "image/png");    
         }
     }
 }

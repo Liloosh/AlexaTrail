@@ -29,6 +29,7 @@ export async function action({ request, params }) {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization" :"Bearer " + localStorage.getItem("token")
     },
     body: JSON.stringify({
       name: formData.get("refsName"),

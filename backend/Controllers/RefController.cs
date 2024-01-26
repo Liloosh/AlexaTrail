@@ -2,7 +2,9 @@
 using backend.Model.Domain;
 using backend.Model.DTO.RefDTO;
 using backend.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Controllers
 {
@@ -19,106 +21,43 @@ namespace backend.Controllers
             this.appDbContext = appDbContext;
         }
 
+        [HttpGet]
+        [Route("nameRefGroup")]
+        public async Task<IActionResult> GetRefGroupByName(string name)
+        {
+            var refsGroup = await appDbContext.RefsGroup.FirstOrDefaultAsync(r => r.Name == name);
+
+            if (refsGroup == null)
+            {
+                return BadRequest();
+            }
+
+            var refsList = await refRepository.getAllRefs(refsGroup.Id);
+
+            return Ok(refsList);
+        }
+
+
         [HttpPost]
         [Route("{refsGroupId:Guid}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> CreateRef([FromRoute]Guid refsGroupId, [FromBody] List<CreateRefDTO> refs)
         {
             var refsList = await refRepository.getAllRefs(refsGroupId);
 
-            switch (refs.Count)
+            bool result = await refRepository.createNewRef(refsGroupId, refs, refsList);
+
+            if (result)
             {
-                case 1:
-                    if (refsList.Count == 0)
-                    {
-                        refs[0].Order = 1;
-                    }
-                    else if (refsList[refsList.Count - 1].Order < refs[0].Order)
-                    {
-                        refs[0].Order = refsList[refsList.Count - 1].Order + 1;
-                    }
-                    break;
-                case 2:
-                    if (refsList.Count == 0)
-                    {
-                        refs[0].Order = 1;
-                        refs[1].Order = 1;
-                    }
-                    else if (refsList[refsList.Count - 1].Order < refs[0].Order)
-                    {
-                        refs[0].Order = refsList[refsList.Count - 1].Order + 1;
-                        refs[1].Order = refsList[refsList.Count - 1].Order + 1;
-                    }
-                    break;
+                return Ok("Success");
             }
-
-            if (refsList.Count != 0 && refsList[refsList.Count - 1].Order >= refs[0].Order)
-            {
-                int index = 0;
-
-                for (int i = 0; i < refsList.Count; i++)
-                {
-                    if (refsList[i].Order == refs[0].Order)
-                    {
-                        index = i; break;
-                    }
-                }
-
-                for (int i = index; i < refsList.Count; i++)
-                {
-                    refsList[i].Order = refsList[i].Order + 1;
-                }
-
-                appDbContext.Ref.UpdateRange(refsList);
-                await appDbContext.SaveChangesAsync();
-            }
-            
-            switch (refs.Count)
-            {
-                case 1:
-                    var Ref1 = new Ref()
-                    {
-                        URL = refs[0].URL,
-                        Text = refs[0].Text,
-                        Type = refs[0].Type,
-                        Order = refs[0].Order,
-                        RefsGroupId = refsGroupId
-                    };
-                    var RefDTO1 = await refRepository.createNewRef(Ref1);
-                    break;
-                case 2:
-                    var Ref11 = new Ref()
-                    {
-                        URL = refs[0].URL,
-                        Text = refs[0].Text,
-                        Type = refs[0].Type,
-                        Order = refs[0].Order,
-                        DoubleRef = true,
-                        OrderInRef = 1,
-                        RefsGroupId = refsGroupId
-                    };
-
-                    var Ref2 = new Ref()
-                    {
-                        URL = refs[1].URL,
-                        Text = refs[1].Text,
-                        Type = refs[1].Type,
-                        Order = refs[1].Order,
-                        DoubleRef = true,
-                        OrderInRef = 2,
-                        RefsGroupId = refsGroupId
-                    };
-
-                    var RefDTO11 = await refRepository.createNewRef(Ref11);
-                    var RefDTO2 = await refRepository.createNewRef(Ref2);
-                    break;
-            }
-
-            return Ok("Success");
+            return BadRequest("Something was wrong");
         }
 
         [HttpGet]
         [Route("{refsId:Guid}")]
+        [Authorize]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> GetAllRef([FromRoute] Guid refsId)
@@ -135,6 +74,7 @@ namespace backend.Controllers
         }
 
         [HttpDelete]
+                [Authorize]
         [Route("{refGroupId:Guid}")]
         public async Task<IActionResult> DeleteRef([FromRoute] Guid refGroupId, [FromBody] Guid refId)
         {

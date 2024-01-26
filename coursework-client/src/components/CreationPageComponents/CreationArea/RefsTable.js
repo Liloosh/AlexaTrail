@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import classes from "./RefsTable.module.css";
+import classes1 from "../../CreationForm.module.css";
 import AuthContext from "../../../context/AuthContext";
 import { useSubmit } from "react-router-dom";
 import {
@@ -15,17 +16,20 @@ import TwoRefs from "./TwoRefs";
 function RefsTable(props) {
   const ctx = useContext(AuthContext);
   const [style, setStyle] = useState("btn");
-  const [Type, setStateType] = useState();
+  const [Type, setStateType] = useState("");
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [order, setOrder] = useState("");
 
   let list = props.refsList;
-  const [listOfItems, setListOfItems] = useState(props.refsList);
 
   const [firstDraggedElement, setFirstDraggedElement] = useState();
-
   const [updatedElement, setUpdatedElement] = useState(0);
+
+  const [errorTitle, setErrorTitle] = useState();
+  const [errorUrl, setErrorUrl] = useState();
+  const [errorType, setErrorType] = useState();
+  const [errorOrder, setErrorOrder] = useState();
 
   const submit = useSubmit();
 
@@ -35,11 +39,11 @@ function RefsTable(props) {
 
   const updateDoubleItem = async (items, refGroupId) => {
     items = JSON.stringify(items);
-    submit({ items,  refGroupId}, { method: "PATCH" });
+    submit({ items, refGroupId }, { method: "PATCH" });
   };
 
   const updateItem = async (refGroupId, refId, Type, url, text, order) => {
-    submit({refGroupId, refId, Type, url, text, order }, { method: "PATCH" });
+    submit({ refGroupId, refId, Type, url, text, order }, { method: "PATCH" });
   };
 
   const setOrderOfUpdatedElement = (order) => {
@@ -47,35 +51,83 @@ function RefsTable(props) {
   };
 
   const onSetTextHandler = (event) => {
-    setText(event.target.value);
+    if (event.target.value.length === 25) {
+      setErrorTitle("Title can`t be more then 25 chars");
+      return;
+    } else {
+      if (event.target.value == "") {
+        setErrorTitle("Title can`t be empty");
+      } else if (errorTitle !== null) {
+        setErrorTitle(null);
+      }
+      setText(event.target.value);
+    }
   };
 
   const onSetTypeHandler = (event) => {
+    setErrorType(null);
     setStateType(event.target.value);
   };
 
   const onSetURLHandler = (event) => {
+    if (event.target.value == "") {
+      setErrorUrl("Url can`t be empty");
+    } else if (event.target.value.slice(0, 8) !== "https://") {
+      setErrorUrl("It is not url");
+    } else if (errorUrl != null) {
+      setErrorUrl(null);
+    }
     setUrl(event.target.value);
   };
 
   const onSetOrderHandler = (event) => {
+    if (event.target.value == "") {
+      setErrorOrder("Order can`t be empty");
+    } else if (event.target.value < 1) {
+      setErrorOrder("Order can`t be less then 1");
+      return;
+    } else if (errorOrder != null) {
+      setErrorOrder(null);
+    }
     setOrder(event.target.value);
   };
+
   const onAddHandler = () => {
     setStyle("btn-clicked");
   };
 
   const onAddRefHandler = () => {
     const type = Type;
-    submit({ type, url, text, order }, { method: "POST" });
-    setStateType("");
-    setUrl("");
-    setText("");
-    setOrder("");
+    if (!errorTitle && !errorUrl && !errorType && !errorOrder) {
+      if (text == "" || order == "" || url == "" || type == "") {
+        if (text == "") {
+          setErrorTitle("Title can`t be empty");
+        }
+        if (order == "") {
+          setErrorOrder("Order can`t be empty");
+        }
+        if (url == "") {
+          setErrorUrl("Url can`t be empty");
+        }
+        if (type == "") {
+          setErrorType("Type can`t be empty");
+        }
+        return;
+      }
+      submit({ type, url, text, order }, { method: "POST" });
+      setStateType("");
+      setUrl("");
+      setText("");
+      setOrder("");
+    }
   };
 
   const onCancelClick = () => {
-    setStateType(-1);
+    setErrorTitle(null);
+    setErrorType(null);
+    setErrorUrl(null);
+    setErrorOrder(null);
+    setStateType("");
     setUrl("");
     setText("");
     setOrder("");
@@ -131,49 +183,24 @@ function RefsTable(props) {
     <div className={classes["container"]}>
       <div className={classes["refs-container"]}>
         {props.refsList.map((item, index) => {
-          return updatedElement === 0 ? (
-            item.doubleRef && props.refsList[index + 1].order === item.order ? (
+          return item.doubleRef ? (
+            props.refsList[index + 1].order === item.order ? (
               <TwoRefs
                 updateItems={updateDoubleItem}
-                isElementUpdated={false}
+                deleteItem={deleteItem}
+                isElementUpdated={updatedElement === item.order ? true : false}
                 setOrderOfUpdatedElement={setOrderOfUpdatedElement}
                 item1={item}
                 item2={props.refsList[index + 1]}
               />
-            ) : props.refsList[index - 1].order !== item.order ? (
-              <Ref
-                draggable={true}
-                onDragStart={(e) => onDragStart(e, item)}
-                onDragLeave={(e) => onDragLeave(e)}
-                onDragEnd={(e) => onDragEnd(e)}
-                onDragOver={(e) => onDragOver(e)}
-                onDrop={(e) => onDrop(e, item)}
-                isElementUpdated={false}
-                setOrderOfUpdatedElement={setOrderOfUpdatedElement}
-                updateItem={updateItem}
-                deleteItem={deleteItem}
-                key={index}
-                length={props.refsList.length}
-                index={index}
-                item={item}
-              />
             ) : null
-          ) : item.doubleRef &&
-            props.refsList[index + 1].order === item.order ? (
-            <TwoRefs
-              updateItems={updateDoubleItem}
-              isElementUpdated={updatedElement === item.order ? true : false}
-              setOrderOfUpdatedElement={setOrderOfUpdatedElement}
-              item1={item}
-              item2={props.refsList[index + 1]}
-            />
-          ) : props.refsList[index - 1].order !== item.order ? (
+          ) : (
             <Ref
               draggable={true}
               onDragStart={(e) => onDragStart(e, item)}
               onDragLeave={(e) => onDragLeave(e)}
               onDragEnd={(e) => onDragEnd(e)}
-              onDragOver={(e) => onDragOver}
+              onDragOver={(e) => onDragOver(e)}
               onDrop={(e) => onDrop(e, item)}
               isElementUpdated={updatedElement === item.order ? true : false}
               setOrderOfUpdatedElement={setOrderOfUpdatedElement}
@@ -184,7 +211,7 @@ function RefsTable(props) {
               index={index}
               item={item}
             />
-          ) : null;
+          );
         })}
       </div>
       {style === "btn-clicked" || style === "btn-clicked-hide" ? (
@@ -196,20 +223,31 @@ function RefsTable(props) {
           }
         >
           <div className={`${classes["input-section"]} gap-4`}>
-            <TextField
-              label="Title"
-              type="text"
-              value={text}
-              onChange={onSetTextHandler}
-              onBlur={onSetTextHandler}
-            />
-            <TextField
-              label="URL"
-              type="text"
-              value={url}
-              onChange={onSetURLHandler}
-              onBlur={onSetURLHandler}
-            />
+            <div>
+              <TextField
+                label="Title"
+                type="text"
+                value={text}
+                className=" mt-4"
+                onChange={onSetTextHandler}
+                onBlur={onSetTextHandler}
+              />
+              {errorTitle && (
+                <h3 className={classes["invalid-msg"]}>{errorTitle}</h3>
+              )}
+            </div>
+            <div>
+              <TextField
+                label="URL"
+                type="text"
+                value={url}
+                onChange={onSetURLHandler}
+                onBlur={onSetURLHandler}
+              />
+              {errorUrl && (
+                <h3 className={classes["invalid-msg"]}>{errorUrl}</h3>
+              )}
+            </div>
             <FormControl>
               <InputLabel>Type</InputLabel>
               <Select
@@ -222,16 +260,30 @@ function RefsTable(props) {
                   return <MenuItem value={item.value}>{item.label}</MenuItem>;
                 })}
               </Select>
+              {errorType && (
+                <h3 className={classes["invalid-msg"]}>{errorType}</h3>
+              )}
             </FormControl>
-            <TextField
-              label="Order"
-              min={1}
-              value={order}
-              onChange={onSetOrderHandler}
-              onBlur={onSetOrderHandler}
-              type="number"
-              className={classes["order-input"]}
-            />
+            <div>
+              <TextField
+                label="Order"
+                min={1}
+                value={order}
+                onChange={onSetOrderHandler}
+                onBlur={onSetOrderHandler}
+                type="number"
+                className={
+                  !errorOrder
+                    ? `mb-4 ${classes["order-input"]}`
+                    : classes["order-input"]
+                }
+              />
+              {errorOrder && (
+                <h3 className={`mb-4 ${classes["invalid-msg"]}`}>
+                  {errorOrder}
+                </h3>
+              )}
+            </div>
           </div>
           <div className={classes["btn-section"]}>
             <button className={classes["add-btn"]} onClick={onAddRefHandler}>

@@ -17,6 +17,20 @@
     margin-right: 5rem;
 }
 
+@media (max-width: 430px) {
+    .logo {
+        width: 8rem;
+        margin: 1.2rem;
+        margin-left: 1rem;
+    }
+
+    .header-button-section {
+        display: flex;
+        align-self: center;
+        margin-right: 1rem;
+    }
+}
+
 .btn {
     font-size: 2rem;
     margin: 1rem;

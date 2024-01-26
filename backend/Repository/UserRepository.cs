@@ -50,17 +50,19 @@ namespace backend.Repository
             try
             {
                 var email = new MimeMessage();
-                email.From.Add(MailboxAddress.Parse("eula.pollich@ethereal.email"));
+                email.From.Add(MailboxAddress.Parse("laurie.larson@ethereal.email"));
                 email.To.Add(MailboxAddress.Parse(userEmail));
                 email.Subject = "Confirmation Email";
                 email.Body = new TextPart(MimeKit.Text.TextFormat.Html)
                 {
-                    Text = $"<a href=\"http://localhost:3000/verificationToken/{System.Web.HttpUtility.UrlEncode(verificationToken, System.Text.Encoding.UTF8)}\">click</a>"
+                    Text = $"<h2><a href=\"http://localhost:3000/verificationToken/{
+                        System.Web.HttpUtility.UrlEncode(verificationToken, System.Text.Encoding.UTF8)
+                        }\">Click here to comfim your email. Have a nice day!)</a>"
                 };
 
                 var smtp = new MailKit.Net.Smtp.SmtpClient();
                 smtp.Connect("smtp.ethereal.email", 587, MailKit.Security.SecureSocketOptions.StartTls);
-                smtp.Authenticate("eula.pollich@ethereal.email", "2H7Yj2Ec1K2pJZbZsY");
+                smtp.Authenticate("laurie.larson@ethereal.email", "SUYCMc2fBtsZu9Kcbm");
                 smtp.Send(email);
                 smtp.Disconnect(true);
 

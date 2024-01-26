@@ -7,6 +7,8 @@ namespace backend.Model.Domain
         public Guid Id { get; set; }
         public string Name { get; set; }
         public string UserId { get; set; }
+        public byte[]? Photo {  get; set; }
+        public string? PhotoHash { get; set; }
 
         public IdentityUser User { get; set; }
     }

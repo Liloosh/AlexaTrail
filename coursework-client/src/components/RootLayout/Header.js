@@ -7,13 +7,13 @@ import { logout } from "../../util/auth";
 
 function Header() {
   const ctx = useContext(AuthContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const onLogout = () => {
-    logout()
+    logout();
     ctx.onSetUserName(null);
-    navigate("/")
-  }
+    navigate("/");
+  };
 
   return (
     <div className={classes["header"]}>
@@ -21,14 +21,18 @@ function Header() {
         <img className={classes["logo"]} src={logo} />
       </div>
       <div className={classes["header-button-section"]}>
-      <h1 className={classes["username"]}>{ctx.userName === null ? " " : ctx.userName}</h1>
+        <h1 className={classes["username"]}>
+          {ctx.userName === null ? " " : ctx.userName}
+        </h1>
         {ctx.userName === null ? (
           <Link
             to="loginSignup?mode=login"
             className={classes["btn"]}
           >{`Log in / Sign up`}</Link>
         ) : (
-          <Link onClick={onLogout} className={classes["btn"]}>Log out</Link>
+          <Link onClick={onLogout} className={classes["btn"]}>
+            Log out
+          </Link>
         )}
       </div>
     </div>

@@ -80,7 +80,7 @@ const Ref = (props) => {
 
   return (
     <div
-      draggable={props.draggable}
+      draggable={true}
       onDragStart={props.onDragStart}
       onDragLeave={props.onDragLeave}
       onDragEnd={props.onDragEnd}
